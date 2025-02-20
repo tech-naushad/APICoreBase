@@ -5,26 +5,28 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using IdentityCore.AppSettings;
+using APICore.AppSettings;
 using Microsoft.IdentityModel.Tokens;
 
-namespace IdentityCore.Factoty.Token
+namespace APICore.Factoty.Token
 {
     public class JwtTokenProvider : ITokenProvider
     {
         private readonly TokenSettings _tokenSettings;
-        public JwtTokenProvider(TokenSettings tokenSettings)
+        public JwtTokenProvider(TokenSettings tokenSettings=null)
         {
             _tokenSettings = tokenSettings;
         }
 
         public async Task<string> GenerateTokenAsync(string userId, IEnumerable<string> roles)
         {
-            var claims = new[]
+            var claims = new List<Claim>();
+            claims.Add(new Claim(ClaimTypes.Name, userId));
+
+            if (roles != null)
             {
-                new Claim(ClaimTypes.Name, userId),
-                new Claim(ClaimTypes.Role, string.Join(",", roles))
-            };
+                claims.Add(new Claim(ClaimTypes.Role, string.Join(",", roles)));              
+            };  
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenSettings.SecretKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

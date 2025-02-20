@@ -1,14 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Serilog.Events;
 
 
-namespace APICoreBase.Extensions
+namespace APICore.Extensions
 {
     public static class LoggerExtension
     {
