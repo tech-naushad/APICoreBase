@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Serilog;
-using Serilog.Events;
 
 
 namespace APICore.Extensions
@@ -9,14 +8,17 @@ namespace APICore.Extensions
     {
         public static WebApplicationBuilder AddLogger(this WebApplicationBuilder builder)
         {
-            Log.Logger = new LoggerConfiguration()
-                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                  .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
-                .ReadFrom.Configuration(builder.Configuration)
-                .Enrich.FromLogContext()
-                .CreateLogger();
+            builder.Host.UseSerilog((context, services, configuration) =>
+            configuration.ReadFrom.Configuration(context.Configuration)
+            );
+            //Log.Logger = new LoggerConfiguration()
+            //    // .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+            //     // .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+            //    .ReadFrom.Configuration(builder.Configuration)
+            //    //.Enrich.FromLogContext()                
+            //    .CreateLogger();
 
-            builder.Host.UseSerilog();
+            //builder.Host.UseSerilog();
             return builder;
         }
     }

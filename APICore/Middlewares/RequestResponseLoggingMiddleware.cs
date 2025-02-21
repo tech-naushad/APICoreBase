@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using Serilog.Context;
 using System.Diagnostics;
 using System.Text;
@@ -20,11 +21,12 @@ namespace APICore.Middlewares
         public async Task Invoke(HttpContext context)
         {
             var requestId = Activity.Current?.Id ?? context.TraceIdentifier;
-
+          
             using (LogContext.PushProperty("RequestId", requestId))
             {
                 var request = await FormatRequest(context.Request);
-                _logger.LogInformation("Incoming Request: {Request}", request);
+                //Log.Information($"Processing the Get request {request}");
+                 _logger.LogInformation("Incoming Request: {Request}", request);
 
                 // Capture response
                 var originalBodyStream = context.Response.Body;
