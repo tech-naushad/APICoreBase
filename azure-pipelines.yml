@@ -28,7 +28,7 @@ jobs:
 - job: CreateNugetPackage
   displayName: Create nuget package
   dependsOn: Build
-  condition: succeed()
+  condition: succeeded()
   steps:
   - task: DotNetCoreCLI@2
     displayName: dotnet pack
