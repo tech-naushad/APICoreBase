@@ -1,25 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace APICore.Middlewares
+﻿namespace APICore.Middlewares
 {
+    using APICore.Exception;
+    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
 
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+        private readonly TelemetryClient _telemetryClient;
 
-        public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+        public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger
+            , TelemetryClient telemetryClient)
         {
             _next = next;
             _logger = logger;
+            _telemetryClient = telemetryClient;
         }
 
         public async Task InvokeAsync(HttpContext httpContext)
@@ -29,11 +28,18 @@ namespace APICore.Middlewares
                 // Call the next middleware in the pipeline
                 await _next(httpContext);
             }
+            catch(DomainException ex)
+            {
+                _logger.LogWarning(ex, "Domain exception occurred.");
+                _telemetryClient.TrackException(ex); // Log exception
+                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await httpContext.Response.WriteAsJsonAsync(new { error = ex.Message });
+            }
             catch (Exception ex)
             {
                 // Log the exception
                 _logger.LogError(ex, "An unhandled exception has occurred");
-
+                _telemetryClient.TrackException(ex);
                 // Handle the exception and send a generic error response
                 httpContext.Response.StatusCode = 500;
                 httpContext.Response.ContentType = "application/json";

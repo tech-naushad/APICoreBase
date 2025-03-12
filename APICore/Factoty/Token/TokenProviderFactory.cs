@@ -25,7 +25,7 @@ namespace APICore.Factoty.Token
                
             }
 
-            throw new Exception("Token ProviderType is not available");
+            throw new System.Exception("Token ProviderType is not available");
         }       
     }
 }

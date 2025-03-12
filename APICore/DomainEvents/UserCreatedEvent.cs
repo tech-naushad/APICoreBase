@@ -4,14 +4,12 @@ namespace APICore.DomainEvents
 {
     public class UserCreatedEvent : INotification
     {
-        public string Name { get; set; }
-        public string UserName { get; set; }
         public string Email { get; set; }
-        public UserCreatedEvent(string name, string userName, string email)
+        public string Mobile { get; set; }
+        public UserCreatedEvent(string email,string mobile)
         {
-            Name = name;
-            UserName = userName;
             Email = email;
+            Mobile = mobile;
         }
     }
 }
