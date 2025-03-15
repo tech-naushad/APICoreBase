@@ -48,6 +48,7 @@ jobs:
       command: 'push'
       packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
       nuGetFeedType: 'internal'
+      feedPublish: 'APICoreFeed'
       verbosityRestore: 'Detailed'
   - task: PublishBuildArtifacts@1
     displayName: publish artifact
