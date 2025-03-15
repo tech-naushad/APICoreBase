@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+	  <PackageId>APICore</PackageId>
+	  <Version>1.0.0</Version>
+	  <Authors>API Core Auth</Authors>
+	  <Description>Base API Core package</Description>
+	  <RepositoryUrl>https://github.com/tech-naushad/APICoreBase</RepositoryUrl>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Title>API Core Package</Title>
