@@ -1,33 +1,32 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - main
 
 pool:
   vmImage: ubuntu-latest
 name: 1.0.$(Build.BuildId)
+
 jobs:
 - job: Build
   displayName: Build the solution
   steps:   
+  - task: NuGetAuthenticate@1
+    displayName: Authenticate with NuGet  
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
       command: 'restore'
       projects: '**/*.csproj'
       feedsToUse: 'select'
-      vstsFeed: 'd1699579-772c-479f-8d22-bc1c1264e4e3/5873eaff-435b-406e-8f83-9e0546e4ac56'
+      vstsFeed: 'test-organisation12/APICoreFeed'
      
   - task: DotNetCoreCLI@2
     displayName: dotnet build
     inputs:
       command: 'build'
       projects: '**/*.csproj'
+
 - job: CreateNugetPackage
-  displayName: Create nuget package
+  displayName: Create NuGet Package
   dependsOn: Build
   condition: succeeded()
   steps:
@@ -37,19 +36,19 @@ jobs:
       command: 'pack'
       packagesToPack: '**/APICore.csproj'
       versioningScheme: 'byBuildNumber'
-      configuration: 'Release'      
-  - task: NuGetAuthenticate@1
-    displayName: Authenticate with NuGet     
+      configuration: 'Release'
+
   - task: DotNetCoreCLI@2
     displayName: dotnet push
     inputs:
       command: 'push'
       packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
       nuGetFeedType: 'internal'
-      feedPublish: 'APICoreFeed'
+      feedPublish: 'test-organisation12/APICoreFeed'
       verbosityRestore: 'Detailed'
+
   - task: PublishBuildArtifacts@1
-    displayName: publish artifact
+    displayName: Publish Artifact
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'     
       publishLocation: 'Container'
