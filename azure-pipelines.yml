@@ -40,6 +40,8 @@ jobs:
       configuration: 'Release' 
   - task: NuGetAuthenticate@1
     displayName: Authenticate with NuGet
+    inputs:
+      nuGetServiceConnections: 'MyNugetRestoreConnection'
   - task: DotNetCoreCLI@2
     displayName: dotnet push
     inputs:
