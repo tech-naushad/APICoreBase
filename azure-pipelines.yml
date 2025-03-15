@@ -35,7 +35,7 @@ jobs:
       packagesToPack: '**/APICore.csproj'
       versioningScheme: 'byBuildNumber'
       configuration: 'Release'
-      outputDirectory: '$(Build.ArtifactStagingDirectory)'
+      
 
   - task: NuGetAuthenticate@1
     displayName: Authenticate with NuGet
