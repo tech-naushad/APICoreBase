@@ -20,6 +20,7 @@ jobs:
       projects: '**/*.csproj'
       feedsToUse: 'select'
       vstsFeed: 'd1699579-772c-479f-8d22-bc1c1264e4e3/5873eaff-435b-406e-8f83-9e0546e4ac56'
+      nugetConfigPath: '/nuget.config'
   - task: DotNetCoreCLI@2
     displayName: dotnet build
     inputs:
