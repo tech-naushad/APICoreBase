@@ -53,5 +53,5 @@ jobs:
     displayName: publish artifact
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      TargetPath: '\\APICore\$(Build.DefinationName)\$(Build.BuildNumber)'
+      TargetPath: '\\APICore\$(Build.DefinitionName)\$(Build.BuildNumber)'
       publishLocation: 'Container'
