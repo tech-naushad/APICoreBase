@@ -3,6 +3,7 @@ trigger:
 
 pool:
   vmImage: ubuntu-latest
+
 name: 1.0.$(Build.BuildId)
 
 jobs:
@@ -23,11 +24,30 @@ jobs:
       command: 'build'
       projects: '**/*.csproj'
 
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test
+    inputs:
+      command: 'test'
+      projects: '**/*.csproj'
+      arguments: '--no-build --verbosity normal'
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish build output
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      publishLocation: 'Container'
+
 - job: CreateNugetPackage
   displayName: Create nuget package
   dependsOn: Build
   condition: succeeded()
   steps:
+  - task: DownloadBuildArtifacts@0
+    displayName: Download build artifacts
+    inputs:
+      artifactName: 'drop'
+      downloadPath: '$(Build.ArtifactStagingDirectory)'
+
   - task: DotNetCoreCLI@2
     displayName: dotnet pack
     inputs:
@@ -35,10 +55,12 @@ jobs:
       packagesToPack: '**/APICore.csproj'
       versioningScheme: 'byBuildNumber'
       configuration: 'Release'
-      
+      outputDirectory: '$(Build.ArtifactStagingDirectory)'
 
   - task: NuGetAuthenticate@1
     displayName: Authenticate with NuGet
+    inputs:
+      nuGetServiceConnections: 'MyNugetRestoreConnection'
 
   - task: DotNetCoreCLI@2
     displayName: dotnet push
@@ -46,12 +68,10 @@ jobs:
       command: 'push'
       packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
       nuGetFeedType: 'internal'
-      publishVstsFeed: 'd1699579-772c-479f-8d22-bc1c1264e4e3/5873eaff-435b-406e-8f83-9e0546e4ac56'
-      verbosityRestore: 'Detailed'
+      feedPublish: 'APICoreFeed'
 
   - task: PublishBuildArtifacts@1
-    displayName: publish artifact
+    displayName: Publish NuGet package
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      TargetPath: '\\APICore\$(Build.DefinationName)\$(Build.BuildNumber)'
       publishLocation: 'Container'
