@@ -8,7 +8,7 @@ trigger:
 
 pool:
   vmImage: ubuntu-latest
-
+name: 1.0.$(Build.BuildId)
 jobs:
 - job: Build
   displayName: Build the solution
@@ -42,7 +42,7 @@ jobs:
       command: 'push'
       packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
       nuGetFeedType: 'internal'
-      publishVstsFeed: 'd1699579-772c-479f-8d22-bc1c1264e4e3/5873eaff-435b-406e-8f83-9e0546e4ac56'
+      publishVstsFeed: 'APICoreFeed'
   - task: PublishBuildArtifacts@1
     displayName: publish artifact
     inputs:
