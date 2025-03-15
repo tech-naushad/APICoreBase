@@ -36,13 +36,16 @@ jobs:
       command: 'pack'
       packagesToPack: '**/APICore.csproj'
       versioningScheme: 'byBuildNumber'
+      configuration: 'Release' 
+  - task: NuGetAuthenticate@1
+    displayName: Authenticate with NuGet
   - task: DotNetCoreCLI@2
     displayName: dotnet push
     inputs:
       command: 'push'
       packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
       nuGetFeedType: 'internal'
-      publishVstsFeed: 'APICoreFeed'
+      verbosityRestore: 'Detailed'
   - task: PublishBuildArtifacts@1
     displayName: publish artifact
     inputs:
