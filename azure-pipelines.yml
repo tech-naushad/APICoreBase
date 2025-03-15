@@ -1,5 +1,7 @@
 trigger:
-- main
+  branches:
+    include:
+      - main  # This triggers the pipeline on a push to the 'main' branch
 
 pool:
   vmImage: ubuntu-latest
