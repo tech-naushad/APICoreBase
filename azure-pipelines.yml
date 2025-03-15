@@ -19,7 +19,7 @@ jobs:
       command: 'restore'
       projects: '**/*.csproj'
       feedsToUse: 'select'
-      vstsFeed: 'APICoreFeed'
+      vstsFeed: 'd1699579-772c-479f-8d22-bc1c1264e4e3/5873eaff-435b-406e-8f83-9e0546e4ac56'
      
   - task: DotNetCoreCLI@2
     displayName: dotnet build
@@ -39,9 +39,7 @@ jobs:
       versioningScheme: 'byBuildNumber'
       configuration: 'Release'      
   - task: NuGetAuthenticate@1
-    displayName: Authenticate with NuGet
-    inputs:
-      nuGetServiceConnections: 'MyNugetRestoreConnection'
+    displayName: Authenticate with NuGet     
   - task: DotNetCoreCLI@2
     displayName: dotnet push
     inputs:
