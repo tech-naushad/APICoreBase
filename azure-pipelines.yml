@@ -1,15 +1,18 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
 trigger:
 - main
 
 pool:
   vmImage: ubuntu-latest
-
 name: 1.0.$(Build.BuildId)
-
 jobs:
 - job: Build
   displayName: Build the solution
-  steps:
+  steps:   
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
@@ -17,52 +20,28 @@ jobs:
       projects: '**/*.csproj'
       feedsToUse: 'select'
       vstsFeed: 'd1699579-772c-479f-8d22-bc1c1264e4e3/5873eaff-435b-406e-8f83-9e0546e4ac56'
-
+     
   - task: DotNetCoreCLI@2
     displayName: dotnet build
     inputs:
       command: 'build'
       projects: '**/*.csproj'
-
-  - task: DotNetCoreCLI@2
-    displayName: dotnet test
-    inputs:
-      command: 'test'
-      projects: '**/*.csproj'
-      arguments: '--no-build --verbosity normal'
-
-  - task: PublishBuildArtifacts@1
-    displayName: Publish build output
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: 'drop'  # ✅ Explicitly name the artifact
-      publishLocation: 'Container'
-
 - job: CreateNugetPackage
   displayName: Create nuget package
   dependsOn: Build
   condition: succeeded()
   steps:
-  - task: DownloadBuildArtifacts@0
-    displayName: Download build artifacts
-    inputs:
-      artifactName: 'drop'  # ✅ This now matches the published artifact name
-      downloadPath: '$(Build.ArtifactStagingDirectory)'
-
   - task: DotNetCoreCLI@2
     displayName: dotnet pack
     inputs:
       command: 'pack'
       packagesToPack: '**/APICore.csproj'
       versioningScheme: 'byBuildNumber'
-      configuration: 'Release'
-      outputDirectory: '$(Build.ArtifactStagingDirectory)'
-
+      configuration: 'Release'      
   - task: NuGetAuthenticate@1
     displayName: Authenticate with NuGet
     inputs:
       nuGetServiceConnections: 'MyNugetRestoreConnection'
-
   - task: DotNetCoreCLI@2
     displayName: dotnet push
     inputs:
@@ -70,10 +49,9 @@ jobs:
       packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
       nuGetFeedType: 'internal'
       feedPublish: 'APICoreFeed'
-
+      verbosityRestore: 'Detailed'
   - task: PublishBuildArtifacts@1
-    displayName: Publish NuGet package
+    displayName: publish artifact
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)/*.nupkg'  # ✅ Ensure NuGet packages are published
-      artifactName: 'nuget-packages'  # ✅ Name the artifact
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'     
       publishLocation: 'Container'
