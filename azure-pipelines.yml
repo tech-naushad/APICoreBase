@@ -8,17 +8,15 @@ name: 1.0.$(Build.BuildId)
 jobs:
 - job: Build
   displayName: Build the solution
-  steps:   
-  - task: NuGetAuthenticate@1
-    displayName: Authenticate with NuGet  
+  steps:
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
       command: 'restore'
       projects: '**/*.csproj'
       feedsToUse: 'select'
-      vstsFeed: 'test-organisation12/APICoreFeed'
-     
+      vstsFeed: 'd1699579-772c-479f-8d22-bc1c1264e4e3/5873eaff-435b-406e-8f83-9e0546e4ac56'
+
   - task: DotNetCoreCLI@2
     displayName: dotnet build
     inputs:
@@ -26,7 +24,7 @@ jobs:
       projects: '**/*.csproj'
 
 - job: CreateNugetPackage
-  displayName: Create NuGet Package
+  displayName: Create nuget package
   dependsOn: Build
   condition: succeeded()
   steps:
@@ -37,6 +35,10 @@ jobs:
       packagesToPack: '**/APICore.csproj'
       versioningScheme: 'byBuildNumber'
       configuration: 'Release'
+      
+
+  - task: NuGetAuthenticate@1
+    displayName: Authenticate with NuGet
 
   - task: DotNetCoreCLI@2
     displayName: dotnet push
@@ -44,11 +46,12 @@ jobs:
       command: 'push'
       packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
       nuGetFeedType: 'internal'
-      feedPublish: 'test-organisation12/APICoreFeed'
+      publishVstsFeed: 'd1699579-772c-479f-8d22-bc1c1264e4e3/5873eaff-435b-406e-8f83-9e0546e4ac56'
       verbosityRestore: 'Detailed'
 
   - task: PublishBuildArtifacts@1
-    displayName: Publish Artifact
+    displayName: publish artifact
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)'     
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      TargetPath: '\\APICore\$(Build.DefinationName)\$(Build.BuildNumber)'
       publishLocation: 'Container'
